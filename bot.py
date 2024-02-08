@@ -1,34 +1,26 @@
 import discord
-import responses
-
-
-# send message to current channel or private message
-async def send_message(message, user_message, is_private):
-    try:
-        response = responses.handle_response(user_message)
-
-        if is_private:
-            await message.author.send(response)  # send privately
-        else:
-            await message.channel.send(response)  # send to current channel
-    except Exception as e:
-        print(e)
+from responses import Responses
+from discord.ext import commands
 
 
 def run_discord_bot():
     TOKEN = "MTIwNDk0ODk2NDYyMTgxMTcxMw.GQsAuQ.KbruT6v2Z8AlOlHMrhxdmi1se1yPsr6_cnj5HY"
     intents = discord.Intents.default()
     intents.message_content = True
-    client = discord.Client(intents=intents)
+    intents.members = True
 
-    @client.event
+    bot = commands.Bot(command_prefix="/", intents=intents)
+
+    @bot.event
     async def on_ready():
-        print(f"{client.user} is now running")
+        await bot.add_cog(Responses(bot))
+        print(f"{bot.user} is now running")
+        print("Loaded cogs:", bot.cogs)
 
-    @client.event
+    @bot.event
     async def on_message(message):
         # want to differentiate between user and bot message
-        if message.author == client.user:
+        if message.author == bot.user:
             return
 
         username = str(message.author)
@@ -37,10 +29,6 @@ def run_discord_bot():
 
         print(f"{username} said '{user_message}' in '{channel}'")
 
-        if user_message[0] == "?":
-            user_message = user_message[1:]
-            await send_message(message, user_message, is_private=True)
-        else:
-            await send_message(message, user_message, is_private=False)
+        await bot.process_commands(message)
 
-    client.run(TOKEN)
+    bot.run(TOKEN)

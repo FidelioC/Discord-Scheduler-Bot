@@ -1,15 +1,19 @@
 import random
+from discord.ext import commands
 
 
-def handle_response(message) -> str:
-    # can always process any message in lower case
-    p_message = message.lower()
+class Responses(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    if p_message == "hello":
-        return "Hallow"
+    @commands.command()
+    async def hello(self, ctx):
+        await ctx.send("hello!")
 
-    if p_message == "roll":
-        return str(random.randint(1, 6))
+    @commands.command()
+    async def roll(self, ctx):
+        await ctx.send(str(random.randint(1, 6)))
 
-    if p_message == "!help":
-        return "`Helep helep!`"
+
+def setup(bot):
+    bot.add_cog(Responses(bot))
