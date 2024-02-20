@@ -41,6 +41,15 @@ class Responses(commands.Cog):
             print(f"Failed to retrieve meaning: {e}")
             await ctx.send("Failed to retrieve the meaning. Please try again later.")
 
+    @commands.command()
+    async def create_event(self, ctx, date, time, location):
+        init_reply = f"""new event received: 
+        date: {date}
+        time: {time}
+        location: {location}"""
+
+        await ctx.send(f"{init_reply}")
+
 
 def setup(bot):
     bot.add_cog(Responses(bot))
